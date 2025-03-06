@@ -87,6 +87,17 @@ public class PetApiController implements PetApi {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
+	@RequestMapping(value = "pet/deployment-ci-info", produces = { "application/json" }, method = RequestMethod.GET)
+	public ResponseEntity<String> infoDeployment() {
+		conigureThreadForLogging();
+
+		log.info("PetStorePetService incoming GET request to petstorepetservice/v2/deployment-ci-info");
+		ApiUtil.setResponse(request, "application/json",
+				"{ \"service\" : \"PETSHOPBOYZ service\", \"version\" : \"" + containerEnvironment.getAppVersion()
+						+ "\", \"container\" : \"Deply by Continuous Deployment\" }");
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
 	@Override
 	public ResponseEntity<List<Pet>> findPetsByStatus(
 			@NotNull @ApiParam(value = "Status values that need to be considered for filter", required = true, allowableValues = "available, pending, sold") @Valid @RequestParam(value = "status", required = true) List<String> status) {
