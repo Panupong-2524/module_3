@@ -121,7 +121,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 	public Collection<Product> getProducts(String category, List<Tag> tags) {
 		List<Product> products = new ArrayList<>();
 
-		String preExecInfo = String.format("PetStoreApp user %s , email %s , session id %s, is requesting to " +
+		String preExecInfo = String.format("PetStoreApp user %s , email %s , request-session id %s , is requesting to " +
 				"GET PRODUCTS via PetStoreServiceImpl",
 				this.sessionUser.getName(),
 				this.sessionUser.getEmail(),
