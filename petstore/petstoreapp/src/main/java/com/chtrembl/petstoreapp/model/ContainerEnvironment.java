@@ -87,6 +87,9 @@ public class ContainerEnvironment implements Serializable {
 	@Value("${petstore.signalr.key:}")
 	private String signalRKey;
 
+	@Value("${azure.application-insights.instrumentation-key:}")
+	private String instrumentationKey;
+
 	private WebClient signalRWebClient = null;
 
 	public static String CURRENT_USERS_HUB = "currentUsers";
@@ -274,5 +277,9 @@ public class ContainerEnvironment implements Serializable {
 				.accept(MediaType.APPLICATION_JSON).header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
 				.header("Cache-Control", "no-cache").header("Authorization", "Bearer " + accessKey).retrieve()
 				.bodyToMono(Object.class).block();
+	}
+
+	public String getInstrumentationKey() {
+		return instrumentationKey;
 	}
 }
