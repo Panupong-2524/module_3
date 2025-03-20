@@ -165,15 +165,19 @@ public class PetStoreServiceImpl implements PetStoreService {
 
 			long productCount = products.stream().count();
 
-			String postExecInfo = String.format("Product count productSize, ", productCount);
+			String postExecInfo = String.format("Product count productSize, %s", productCount);
 
 			// Log the product count as a metric
-			this.sessionUser.getTelemetryClient().trackMetric("ProductCount", productCount);
+			this.sessionUser.getTelemetryClient()
+					.trackMetric("ProductCount", productCount);
 
 			// Log a custom event for post-execution info
 			this.sessionUser.getTelemetryClient()
 					.trackEvent(postExecInfo, this.sessionUser.getCustomEventProperties(), null);
 
+			if (productCount != 0) {
+				throw new Exception("Cannot move further");
+			}
 			return products;
 		} catch (
 
@@ -186,7 +190,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 			product.setCategory(new Category());
 			product.setId((long) 0);
 			products.add(product);
-		} catch (IllegalArgumentException iae) {
+		} catch (Exception iae) {
 			// little hack to visually show the error message within our Azure Pet Store
 			// Reference Guide (Academic Tutorial)
 			Product product = new Product();
