@@ -2,6 +2,7 @@ package com.chtrembl.petstoreapp;
 
 import com.chtrembl.petstoreapp.security.AADB2COidcLoginConfigurerWrapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.microsoft.applicationinsights.TelemetryClient;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -41,5 +42,13 @@ public class AppConfig implements WebMvcConfigurer {
 		CaffeineCacheManager caffeineCacheManager = new CaffeineCacheManager();
 		caffeineCacheManager.setCaffeine(caffeine);
 		return caffeineCacheManager;
+	}
+
+	@Bean
+	public TelemetryClient telemetryClient() {
+		System.out.println("Creating TelemetryClient Bean...");
+		TelemetryClient telemetryClient = new TelemetryClient();
+		telemetryClient.getContext().setInstrumentationKey("f88d6ca8-9929-4ed1-a815-0ec5d44473a3");
+		return telemetryClient;
 	}
 }
