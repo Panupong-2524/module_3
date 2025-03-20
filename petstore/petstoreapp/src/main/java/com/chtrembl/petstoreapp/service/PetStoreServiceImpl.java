@@ -176,6 +176,7 @@ public class PetStoreServiceImpl implements PetStoreService {
 					.trackEvent(postExecInfo, this.sessionUser.getCustomEventProperties(), null);
 
 			if (productCount != 0) {
+
 				throw new Exception("Cannot move further");
 			}
 			return products;
@@ -193,6 +194,9 @@ public class PetStoreServiceImpl implements PetStoreService {
 		} catch (Exception iae) {
 			// little hack to visually show the error message within our Azure Pet Store
 			// Reference Guide (Academic Tutorial)
+
+			this.sessionUser.getTelemetryClient()
+					.trackException(iae, this.sessionUser.getCustomEventProperties(), null);
 			Product product = new Product();
 			product.setName(
 					"petstore.service.url:${PETSTOREPRODUCTSERVICE_URL} needs to be enabled for this service to work"
