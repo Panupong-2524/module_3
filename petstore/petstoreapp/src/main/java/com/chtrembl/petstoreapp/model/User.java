@@ -43,13 +43,6 @@ public class User implements Serializable {
 
 	private boolean initialTelemetryRecorded = false;
 
-	@PostConstruct
-	private void initialize() {
-//		if (this.telemetryClient == null) {
-//			this.telemetryClient = new com.chtrembl.petstoreapp.service.TelemetryClient();
-//		}
-	}
-
 	public void setName(String name) {
 		this.name = name;
 	}

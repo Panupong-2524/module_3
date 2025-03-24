@@ -42,5 +42,4 @@ public class AppConfig implements WebMvcConfigurer {
 		caffeineCacheManager.setCaffeine(caffeine);
 		return caffeineCacheManager;
 	}
-
 }

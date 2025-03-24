@@ -223,10 +223,6 @@ public class WebAppController {
 			model.addAttribute("userLoggedIn", true);
 			model.addAttribute("email", this.sessionUser.getEmail());
 		}
-		/***
-		 * Add Logging for module 5
-		 */
-
 		return "cart";
 	}
 
