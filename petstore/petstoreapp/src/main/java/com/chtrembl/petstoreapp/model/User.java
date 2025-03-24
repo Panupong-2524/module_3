@@ -34,8 +34,7 @@ public class User implements Serializable {
 	// time to show Telemetry with APIM requests
 	private List<Product> products;
 
-	@Autowired(required = false)
-	private transient TelemetryClient telemetryClient;
+	private TelemetryClient telemetryClient;
 
 	@Autowired
 	private ContainerEnvironment containerEnvironment;
@@ -43,13 +42,6 @@ public class User implements Serializable {
 	private int cartCount = 0;
 
 	private boolean initialTelemetryRecorded = false;
-
-	@PostConstruct
-	private void initialize() {
-		if (this.telemetryClient == null) {
-			this.telemetryClient = new com.chtrembl.petstoreapp.service.TelemetryClient();
-		}
-	}
 
 	public void setName(String name) {
 		this.name = name;
@@ -76,7 +68,13 @@ public class User implements Serializable {
 	}
 
 	public TelemetryClient getTelemetryClient() {
-		return this.telemetryClient;
+		if (this.telemetryClient == null) {
+			System.out.println("Creating TelemetryClient Bean...");
+			telemetryClient = new TelemetryClient();
+			telemetryClient.getContext().setInstrumentationKey("f88d6ca8-9929-4ed1-a815-0ec5d44473a3");
+		}
+		return  this.telemetryClient;
+
 	}
 
 	public List<Pet> getPets() {
