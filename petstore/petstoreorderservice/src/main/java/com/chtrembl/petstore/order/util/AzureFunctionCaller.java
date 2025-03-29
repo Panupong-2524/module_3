@@ -7,25 +7,28 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 public class AzureFunctionCaller {
 
-    private static String functionUrl = System.getenv("FUNCTION_URL");
-    private static String apiKey = System.getenv("API_KEY");
+
+
+
+
+
+    private static final String FUNCTION_URL = System.getenv("URL");
+    private static final String FUNCTION_KEY = System.getenv("KEY");
 
     public static String callAzureFunctionWithRetry(String id, String payload) throws IOException {
         // Create HTTP client
         CloseableHttpClient httpClient = HttpClients.createDefault();
-
         try {
             // Create HTTP POST request
-            HttpPost httpPost = new HttpPost(functionUrl);
+            HttpPost httpPost = new HttpPost(FUNCTION_URL);
             // Add Optional API Key (if set)
-            if (apiKey != null && !apiKey.isEmpty()) {
-                httpPost.addHeader("x-functions-key", apiKey);
+            if (FUNCTION_KEY != null && !FUNCTION_KEY.isEmpty()) {
+                httpPost.addHeader("x-functions-key", FUNCTION_KEY);
             }
             // Add payload as JSON string
             StringEntity entity = new StringEntity(payload);
