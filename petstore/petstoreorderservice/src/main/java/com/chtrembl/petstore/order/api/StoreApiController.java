@@ -28,6 +28,9 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
+import static com.chtrembl.petstore.order.util.AzureFunctionCaller.callAzureFunctionWithRetry;
+
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2021-12-21T10:17:19.885-05:00")
 
 @Controller
@@ -164,14 +167,17 @@ public class StoreApiController implements StoreApi {
 			try {
 				Order order = this.storeApiCache.getOrder(body.getId());
 				String orderJSON = new ObjectMapper().writeValueAsString(order);
-
+				// Upload latest order here
+				callAzureFunctionWithRetry(body.getId(), orderJSON);
 				ApiUtil.setResponse(request, "application/json", orderJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
 				log.error("Couldn't serialize response for content type application/json", e);
 				return new ResponseEntity<Order>(HttpStatus.INTERNAL_SERVER_ERROR);
-			}
-		}
+			} catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
 
 		return new ResponseEntity<Order>(HttpStatus.NOT_IMPLEMENTED);
 
