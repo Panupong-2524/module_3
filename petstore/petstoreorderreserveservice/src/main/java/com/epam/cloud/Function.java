@@ -1,41 +1,55 @@
 package com.epam.cloud;
 
-import com.microsoft.azure.functions.ExecutionContext;
-import com.microsoft.azure.functions.HttpMethod;
-import com.microsoft.azure.functions.HttpRequestMessage;
-import com.microsoft.azure.functions.HttpResponseMessage;
-import com.microsoft.azure.functions.HttpStatus;
+import com.azure.core.implementation.util.InputStreamContent;
+import com.microsoft.azure.functions.*;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.BlobServiceClientBuilder;
+import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobClient;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Optional;
 
-/**
- * Azure Functions with HTTP Trigger.
- */
 public class Function {
-    /**
-     * This function listens at endpoint "/api/HttpExample". Two ways to invoke it using "curl" command in bash:
-     * 1. curl -d "HTTP Body" {your host}/api/HttpExample
-     * 2. curl "{your host}/api/HttpExample?name=HTTP%20Query"
-     */
-    @FunctionName("HttpExample")
+
+    private static final String CONNECTION_STRING = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
+    private static final String CONTAINER_NAME = "petstore";
+
+    @FunctionName("uploadFileToAzureBlob")
     public HttpResponseMessage run(
-            @HttpTrigger(name = "req", methods = {HttpMethod.GET, HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS)
+            @HttpTrigger(name = "req", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.FUNCTION)
             HttpRequestMessage<Optional<String>> request,
             final ExecutionContext context) {
+        context.getLogger().info("Processing file upload request");
+        try {
+            // Extract file from the request body (as stream)
+            String data = request.getBody().orElseThrow();
+            String fileName = request.getHeaders().getOrDefault("session-name", "default") + ".json";
+            context.getLogger().info("Upload FileName : " + fileName);
+            context.getLogger().info("Data :" + data);
+            // Step 1: Create Blob Service Client
+            BlobServiceClient blobServiceClient = new BlobServiceClientBuilder().connectionString(CONNECTION_STRING).buildClient();
+            // Step 2: Get Container Client
+            BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(CONTAINER_NAME); // Replace 'mycontainer' with your container name
+            // Step 3: Get Blob Client
+            BlobClient blobClient = containerClient.getBlobClient(fileName);
+            // Step 4: Upload File Stream to Azure Blob Storage
+            blobClient.upload(new ByteArrayInputStream(data.getBytes()), data.getBytes().length, true);
+            // Response to Client
+            return request.createResponseBuilder(HttpStatus.OK)
+                    .body("File successfully uploaded to blob storage! Blob name: " + fileName)
+                    .build();
 
-        context.getLogger().info("Java HTTP trigger processed a request.");
-
-        // Parse query parameter
-        final String query = request.getQueryParameters().get("name");
-        final String name = request.getBody().orElse(query);
-
-        if (name == null) {
-            return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
-        } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
+        } catch (Exception e) {
+            context.getLogger().severe("File upload failed. Error: " + e.getMessage());
+            return request.createResponseBuilder(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File upload failed")
+                    .build();
         }
     }
 }
