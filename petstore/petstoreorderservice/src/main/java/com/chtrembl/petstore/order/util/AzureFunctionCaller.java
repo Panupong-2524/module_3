@@ -12,13 +12,8 @@ import java.io.IOException;
 
 public class AzureFunctionCaller {
 
-
-
-
-
-
-    private static final String FUNCTION_URL = System.getenv("URL");
-    private static final String FUNCTION_KEY = System.getenv("KEY");
+    private static final String FUNCTION_URL = System.getenv("FUNCTION_URL");
+    private static final String FUNCTION_KEY = System.getenv("FUNCTION_KEY");
 
     public static String callAzureFunctionWithRetry(String id, String payload) throws IOException {
         // Create HTTP client
