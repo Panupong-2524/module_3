@@ -1,12 +1,13 @@
 #!/bin/bash
 
 # Check for minimum required parameters: script needs at least 5 arguments
-if [ $# -lt 1 ]; then
-    echo "Usage: $0 <resource_group>"
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <resource_group> <region>"
     exit 1
 fi
 
 RESOURCE_GROUP=$1
+REGION=$2
 # Using Linux OS
 OS_TYPE="--is-linux"
 # Standard S1
@@ -41,8 +42,7 @@ create_app_service_plan() {
 
 
 # Creating the App Service Plans with specified parameters
-create_app_service_plan "asp-api-eastus" "eastus"
-create_app_service_plan "asp-web-eastus" "eastus"
-create_app_service_plan "asp-web-westeurope" "westeurope"
+create_app_service_plan "asp-api-$REGION" "$REGION"
+create_app_service_plan "asp-web-$REGION" "$REGION"
 
 echo "All specified App Service Plans have been created successfully."
