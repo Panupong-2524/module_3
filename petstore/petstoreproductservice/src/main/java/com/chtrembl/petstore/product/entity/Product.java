@@ -17,31 +17,31 @@ import java.util.Set;
 
 @Data
 @Entity
-@Table(name = "product", schema = "public") // Matches PostgreSQL name and schema
+@Table(name = "product", schema = "public")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 64) // VARCHAR(64) NOT NULL UNIQUE
+    @Column(nullable = false, unique = true, length = 64)
     private String name;
 
     @ManyToOne // Foreign key reference to Category
-    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id") // Matches FK constraint
+    @JoinColumn(name = "category_id", nullable = false, referencedColumnName = "id")
     private Category category;
 
-    @Column(nullable = false, length = 255) // PhotoURL VARCHAR(255) NOT NULL
+    @Column(nullable = false, length = 255)
     private String photoURL;
 
-    @Column(nullable = false, length = 64) // Status VARCHAR(64) NOT NULL
+    @Column(nullable = false, length = 64)
     private String status;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "pet_tag",
+            name = "product_tag",
             schema = "public",
-            joinColumns = @JoinColumn(name = "pet_id", referencedColumnName = "id"),
+            joinColumns = @JoinColumn(name = "product_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id")
     )
     private Set<Tag> tags;
