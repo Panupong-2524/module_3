@@ -29,3 +29,10 @@ management:
   endpoint:
     httptrace:
       enabled: true
+
+azure:
+  cosmos:
+    endpoint: ${AZURE_COSMOS_ENDPOINT:your-cosmos-db-endpoint}
+    key: ${AZURE_COSMOS_KEY:your-cosmos-db-primary-key}
+    database: OrderDatabase
+    container: OrderContainer

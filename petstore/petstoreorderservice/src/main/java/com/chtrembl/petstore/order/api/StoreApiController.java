@@ -3,6 +3,7 @@ package com.chtrembl.petstore.order.api;
 import com.chtrembl.petstore.order.model.ContainerEnvironment;
 import com.chtrembl.petstore.order.model.Order;
 import com.chtrembl.petstore.order.model.Product;
+import com.chtrembl.petstore.order.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.io.IOException;
@@ -83,8 +85,9 @@ public class StoreApiController implements StoreApi {
 
 		int ordersCacheSize = 0;
 		try {
-			org.springframework.cache.concurrent.ConcurrentMapCache mapCache = ((org.springframework.cache.concurrent.ConcurrentMapCache) this.cacheManager
-					.getCache("orders"));
+			org.springframework.cache.concurrent.ConcurrentMapCache mapCache =
+					((org.springframework.cache.concurrent.ConcurrentMapCache)
+							this.cacheManager.getCache("orders"));
 			ordersCacheSize = mapCache.getNativeCache().size();
 		} catch (Exception e) {
 			log.warn(String.format("could not get the orders cache size :%s", e.getMessage()));
@@ -98,6 +101,21 @@ public class StoreApiController implements StoreApi {
 						+ "\", \"ordersCacheSize\" : \"" + ordersCacheSize + "\", \"author\" : \"" + containerEnvironment.getAuthor()
 						+ "\" }");
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@Autowired
+	private OrderService orderService;
+
+	@PostConstruct
+	public void test() {
+
+		com.chtrembl.petstore.order.entity.Order order = new com.chtrembl.petstore.order.entity.Order();
+		order.setOrderId("123");
+		order.setEmail("panupong.sanprasit@gmail.com");
+		order.setStatus("available");
+		orderService.createOrder(order);
+		log.info("Order created with ID: " + order.getOrderId());
+		
 	}
 
 	@Override
@@ -115,8 +133,11 @@ public class StoreApiController implements StoreApi {
 					body.getId()));
 
 			this.storeApiCache.getOrder(body.getId()).setId(body.getId());
+
 			this.storeApiCache.getOrder(body.getId()).setEmail(body.getEmail());
+
 			this.storeApiCache.getOrder(body.getId()).setComplete(body.isComplete());
+
 
 			// 1 product is just an add from a product page so cache needs to be updated
 			if (body.getProducts() != null && body.getProducts().size() == 1) {
@@ -184,6 +205,7 @@ public class StoreApiController implements StoreApi {
 
 		String acceptType = request.getHeader("Content-Type");
 		String contentType = request.getHeader("Content-Type");
+
 		if (acceptType != null && contentType != null && acceptType.contains("application/json")
 				&& contentType.contains("application/json")) {
 
@@ -214,7 +236,9 @@ public class StoreApiController implements StoreApi {
 			}
 
 			try {
-				ApiUtil.setResponse(request, "application/json", new ObjectMapper().writeValueAsString(order));
+				ApiUtil.setResponse(request, "application/json",
+						new ObjectMapper().writeValueAsString(order)
+				);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
 				log.error("Couldn't serialize response for content type application/json", e);

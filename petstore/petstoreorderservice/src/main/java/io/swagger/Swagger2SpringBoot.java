@@ -8,6 +8,7 @@ import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +16,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
-@EnableCaching
+@SpringBootApplication(scanBasePackages = "com.chtrembl.petstore.order")
+@EntityScan(basePackages = "com.chtrembl.petstore.order.entity")
 @EnableSwagger2
-@ComponentScan(basePackages = { "io.swagger", "com.chtrembl.petstore.order.api", "io.swagger.configuration" })
+@ComponentScan(basePackages = { "io.swagger", "com.chtrembl.petstore.order.api"
+		, "com.chtrembl.petstore.order.entity", "com.chtrembl.petstore.order.repository"
+		, "com.chtrembl.petstore.order.service", "io.swagger.configuration" })
 public class Swagger2SpringBoot implements CommandLineRunner {
 	static final Logger log = LoggerFactory.getLogger(Swagger2SpringBoot.class);
 
