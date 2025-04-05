@@ -5,8 +5,6 @@ import com.chtrembl.petstore.order.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class OrderService {
 
@@ -25,6 +23,6 @@ public class OrderService {
 
     // Retrieves a single order by ID from CosmosDB
     public Order getOrderById(String orderId) {
-        return orderRepository.findById(orderId).orElse(null);
+        return orderRepository.findById(orderId).orElse(new Order());
     }
 }

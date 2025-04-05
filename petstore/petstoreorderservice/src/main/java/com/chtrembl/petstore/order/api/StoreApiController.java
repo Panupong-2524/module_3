@@ -27,6 +27,7 @@ import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -106,17 +107,26 @@ public class StoreApiController implements StoreApi {
 	@Autowired
 	private OrderService orderService;
 
-	@PostConstruct
-	public void test() {
-
-		com.chtrembl.petstore.order.entity.Order order = new com.chtrembl.petstore.order.entity.Order();
-		order.setOrderId("123");
-		order.setEmail("panupong.sanprasit@gmail.com");
-		order.setStatus("available");
-		orderService.createOrder(order);
-		log.info("Order created with ID: " + order.getOrderId());
-		
-	}
+//	@PostConstruct
+//	public void test() {
+//
+//		com.chtrembl.petstore.order.entity.Order order = new com.chtrembl.petstore.order.entity.Order();
+//
+//		order.setId("44");
+//		order.setEmail("panupong.sanprasit@gmail.com");
+//		order.setStatus("available");
+//		order.setProducts(new ArrayList<Product>(){{
+//			add(new Product());
+//			add(new Product());
+//		}});
+//		orderService.createOrder(order);
+//		log.info("Order created with ID: " + order.getId());
+//
+//		com.chtrembl.petstore.order.entity.Order order2 = orderService.getOrderById("44");
+//
+//		System.out.println(order2);
+//
+//	}
 
 	@Override
 	public ResponseEntity<Order> placeOrder(
@@ -132,22 +142,27 @@ public class StoreApiController implements StoreApi {
 					"PetStoreOrderService incoming POST request to petstoreorderservice/v2/order/placeOder for order id:%s",
 					body.getId()));
 
-			this.storeApiCache.getOrder(body.getId()).setId(body.getId());
+			Order order = storeApiCache.getOrder(body.getId());
+			order.setId(body.getId());
+			order.setEmail(body.getEmail());
+			order.setComplete(body.isComplete());
 
-			this.storeApiCache.getOrder(body.getId()).setEmail(body.getEmail());
-
-			this.storeApiCache.getOrder(body.getId()).setComplete(body.isComplete());
+			com.chtrembl.petstore.order.entity.Order consmosOrder = orderService.getOrderById(body.getId());
+			consmosOrder.setId(body.getId());
+			consmosOrder.setEmail(body.getEmail());
+			consmosOrder.setComplete(body.isComplete());
 
 
 			// 1 product is just an add from a product page so cache needs to be updated
 			if (body.getProducts() != null && body.getProducts().size() == 1) {
 				Product incomingProduct = body.getProducts().get(0);
-				List<Product> existingProducts = this.storeApiCache.getOrder(body.getId()).getProducts();
+				List<Product> existingProducts = order.getProducts();
 				if (existingProducts != null && existingProducts.size() > 0) {
 					// removal if one exists...
 					if (incomingProduct.getQuantity() == 0) {
 						existingProducts.removeIf(product -> product.getId().equals(incomingProduct.getId()));
-						this.storeApiCache.getOrder(body.getId()).setProducts(existingProducts);
+						order.setProducts(existingProducts);
+						consmosOrder.setproducts(existingProducts);
 					}
 					// update quantity if one exists or add new entry
 					else {
@@ -166,26 +181,30 @@ public class StoreApiController implements StoreApi {
 							}
 						} else {
 							// existing products but one does not exist matching the incoming product
-							this.storeApiCache.getOrder(body.getId()).addProductsItem(body.getProducts().get(0));
+							order.addProductsItem(body.getProducts().get(0));
+							consmosOrder.geProducts().add(body.getProducts().get(0));
 						}
 					}
 				} else {
 					// nothing existing....
 					if (body.getProducts().get(0).getQuantity() > 0) {
-						this.storeApiCache.getOrder(body.getId()).setProducts(body.getProducts());
+						order.setProducts(body.getProducts());
+						consmosOrder.setProducts(body.getProducts());
 					}
 				}
 			}
 			// n products is the current order being modified and so cache can be replaced
 			// with it
 			if (body.getProducts() != null && body.getProducts().size() > 1) {
-				this.storeApiCache.getOrder(body.getId()).setProducts(body.getProducts());
+				order.setProducts(body.getProducts());
+				consmosOrder.setProducts(body.getProducts());
 			}
 
 			try {
-				Order order = this.storeApiCache.getOrder(body.getId());
 				String orderJSON = new ObjectMapper().writeValueAsString(order);
-
+				String orderCosmosJSON = new ObjectMapper().writeValueAsString(consmosOrder);
+				log.info("orderJSON : " + orderJSON);
+				log.info("orderCosmosJSON : " + orderCosmosJSON);
 				ApiUtil.setResponse(request, "application/json", orderJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
@@ -235,9 +254,20 @@ public class StoreApiController implements StoreApi {
 				}
 			}
 
+
+			com.chtrembl.petstore.order.entity.Order consmosOrder = orderService.getOrderById(orderId);
+
+
+
 			try {
+				String orderJSON = new ObjectMapper().writeValueAsString(order);
+				String orderCosmosJSON = new ObjectMapper().writeValueAsString(consmosOrder);
+
+				log.info("orderJSON : " + orderJSON);
+				log.info("orderCosmosJSON : " + orderCosmosJSON);
+
 				ApiUtil.setResponse(request, "application/json",
-						new ObjectMapper().writeValueAsString(order)
+						orderCosmosJSON
 				);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
