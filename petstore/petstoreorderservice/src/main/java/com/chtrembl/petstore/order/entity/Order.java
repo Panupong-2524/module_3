@@ -14,6 +14,9 @@ import java.util.List;
 @Container(containerName = "OrderContainer", autoCreateContainer = false)
 public class Order {
 
+    @PartitionKey
+    private String orderId;
+
     private String id = null;
 
     private String email = null;

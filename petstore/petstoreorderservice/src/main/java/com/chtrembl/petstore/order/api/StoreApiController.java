@@ -21,13 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.NativeWebRequest;
 
-import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +40,9 @@ public class StoreApiController implements StoreApi {
 	private final ObjectMapper objectMapper;
 
 	private final NativeWebRequest request;
+
+	@Autowired
+	private OrderService orderService;
 
 	@Autowired
 	@Qualifier(value = "cacheManager")
@@ -86,9 +87,8 @@ public class StoreApiController implements StoreApi {
 
 		int ordersCacheSize = 0;
 		try {
-			org.springframework.cache.concurrent.ConcurrentMapCache mapCache =
-					((org.springframework.cache.concurrent.ConcurrentMapCache)
-							this.cacheManager.getCache("orders"));
+			org.springframework.cache.concurrent.ConcurrentMapCache mapCache = ((org.springframework.cache.concurrent.ConcurrentMapCache) this.cacheManager
+					.getCache("orders"));
 			ordersCacheSize = mapCache.getNativeCache().size();
 		} catch (Exception e) {
 			log.warn(String.format("could not get the orders cache size :%s", e.getMessage()));
@@ -104,30 +104,6 @@ public class StoreApiController implements StoreApi {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
-	@Autowired
-	private OrderService orderService;
-
-//	@PostConstruct
-//	public void test() {
-//
-//		com.chtrembl.petstore.order.entity.Order order = new com.chtrembl.petstore.order.entity.Order();
-//
-//		order.setId("44");
-//		order.setEmail("panupong.sanprasit@gmail.com");
-//		order.setStatus("available");
-//		order.setProducts(new ArrayList<Product>(){{
-//			add(new Product());
-//			add(new Product());
-//		}});
-//		orderService.createOrder(order);
-//		log.info("Order created with ID: " + order.getId());
-//
-//		com.chtrembl.petstore.order.entity.Order order2 = orderService.getOrderById("44");
-//
-//		System.out.println(order2);
-//
-//	}
-
 	@Override
 	public ResponseEntity<Order> placeOrder(
 			@ApiParam(value = "order placed for purchasing the product", required = true) @Valid @RequestBody Order body) {
@@ -142,16 +118,11 @@ public class StoreApiController implements StoreApi {
 					"PetStoreOrderService incoming POST request to petstoreorderservice/v2/order/placeOder for order id:%s",
 					body.getId()));
 
-			Order order = storeApiCache.getOrder(body.getId());
+			com.chtrembl.petstore.order.entity.Order order = orderService.getOrderById(body.getId());
 			order.setId(body.getId());
+			order.setOrderId(body.getId());
 			order.setEmail(body.getEmail());
 			order.setComplete(body.isComplete());
-
-			com.chtrembl.petstore.order.entity.Order consmosOrder = orderService.getOrderById(body.getId());
-			consmosOrder.setId(body.getId());
-			consmosOrder.setEmail(body.getEmail());
-			consmosOrder.setComplete(body.isComplete());
-
 
 			// 1 product is just an add from a product page so cache needs to be updated
 			if (body.getProducts() != null && body.getProducts().size() == 1) {
@@ -162,7 +133,6 @@ public class StoreApiController implements StoreApi {
 					if (incomingProduct.getQuantity() == 0) {
 						existingProducts.removeIf(product -> product.getId().equals(incomingProduct.getId()));
 						order.setProducts(existingProducts);
-						consmosOrder.setproducts(existingProducts);
 					}
 					// update quantity if one exists or add new entry
 					else {
@@ -181,15 +151,13 @@ public class StoreApiController implements StoreApi {
 							}
 						} else {
 							// existing products but one does not exist matching the incoming product
-							order.addProductsItem(body.getProducts().get(0));
-							consmosOrder.geProducts().add(body.getProducts().get(0));
+							order.getProducts().add(body.getProducts().get(0));
 						}
 					}
 				} else {
 					// nothing existing....
 					if (body.getProducts().get(0).getQuantity() > 0) {
 						order.setProducts(body.getProducts());
-						consmosOrder.setProducts(body.getProducts());
 					}
 				}
 			}
@@ -197,14 +165,13 @@ public class StoreApiController implements StoreApi {
 			// with it
 			if (body.getProducts() != null && body.getProducts().size() > 1) {
 				order.setProducts(body.getProducts());
-				consmosOrder.setProducts(body.getProducts());
 			}
 
 			try {
+				log.info("Save cosmos order");
+				orderService.createOrder(order);
 				String orderJSON = new ObjectMapper().writeValueAsString(order);
-				String orderCosmosJSON = new ObjectMapper().writeValueAsString(consmosOrder);
-				log.info("orderJSON : " + orderJSON);
-				log.info("orderCosmosJSON : " + orderCosmosJSON);
+
 				ApiUtil.setResponse(request, "application/json", orderJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
@@ -224,7 +191,6 @@ public class StoreApiController implements StoreApi {
 
 		String acceptType = request.getHeader("Content-Type");
 		String contentType = request.getHeader("Content-Type");
-
 		if (acceptType != null && contentType != null && acceptType.contains("application/json")
 				&& contentType.contains("application/json")) {
 
@@ -234,7 +200,7 @@ public class StoreApiController implements StoreApi {
 
 			List<Product> products = this.storeApiCache.getProducts();
 
-			Order order = this.storeApiCache.getOrder(orderId);
+			com.chtrembl.petstore.order.entity.Order order = orderService.getOrderById(orderId);
 
 			if (products != null) {
 				// cross reference order data (order only has product id and qty) with product
@@ -247,6 +213,7 @@ public class StoreApiController implements StoreApi {
 							p.setPhotoURL((peekedProduct.getPhotoURL()));
 						}
 					}
+					orderService.createOrder(order);
 				} catch (Exception e) {
 					log.error(String.format(
 							"PetStoreOrderService incoming GET request to petstoreorderservice/v2/order/getOrderById for order id:%s failed: %s",
@@ -254,21 +221,8 @@ public class StoreApiController implements StoreApi {
 				}
 			}
 
-
-			com.chtrembl.petstore.order.entity.Order consmosOrder = orderService.getOrderById(orderId);
-
-
-
 			try {
-				String orderJSON = new ObjectMapper().writeValueAsString(order);
-				String orderCosmosJSON = new ObjectMapper().writeValueAsString(consmosOrder);
-
-				log.info("orderJSON : " + orderJSON);
-				log.info("orderCosmosJSON : " + orderCosmosJSON);
-
-				ApiUtil.setResponse(request, "application/json",
-						orderCosmosJSON
-				);
+				ApiUtil.setResponse(request, "application/json", new ObjectMapper().writeValueAsString(order));
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
 				log.error("Couldn't serialize response for content type application/json", e);
