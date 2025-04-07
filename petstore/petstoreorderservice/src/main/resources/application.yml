@@ -33,7 +33,7 @@ management:
 azure:
   cloud:
     cosmos:
-      endpoint: ${AZURE_COSMOS_ENDPOINT:https://module7cosmosdb.documents.azure.com:443/}
-      key: ${AZURE_COSMOS_KEY:CyuSfoLTQGCrjHUK66BD7TC998uRC7A2aOA6RMWXbB9CSD7AIPLCTsm1KoPQFsYyHCMgQ8ENLzG4ACDbmmrVlQ==}
+      endpoint: ${AZURE_COSMOS_ENDPOINT:url}
+      key: ${AZURE_COSMOS_KEY:key}
       database: ${AZURE_COSMOS_DATABASE:OrderDatabase}
       container: ${AZURE_COSMOS_CONTAINER:OrderContainer}
