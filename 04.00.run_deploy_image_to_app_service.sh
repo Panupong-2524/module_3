@@ -5,10 +5,6 @@ if [ $# -lt 2 ]; then
     exit 1
 fi
 
-# Variables
-# rgName="demo-rg"
-# acrName="petshopboyzcr"
-
 RG_NAME=$1
 REGION=$2
 ACR_NAME=$3
@@ -43,7 +39,7 @@ deploy_app() {
 }
 
 # Deploy to Web Plans
-deploy_app "petshopboyz-web-app-$REGION" "asp-web-$REGION" "petstoreapp" "$REGION"
+#deploy_app "petshopboyz-web-app-$REGION" "asp-web-$REGION" "petstoreapp" "$REGION"
 
 # # Deploy to API Plan
 deploy_app "petshopboyz-pet-service-$REGION" "asp-api-$REGION" "petstorepetservice" "$REGION"
