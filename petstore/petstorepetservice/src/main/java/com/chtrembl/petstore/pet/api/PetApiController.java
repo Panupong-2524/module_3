@@ -3,12 +3,7 @@ package com.chtrembl.petstore.pet.api;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -119,8 +114,8 @@ public class PetApiController implements PetApi {
 					"PetStorePetService incoming GET request to petstorepetservice/v2/pet/findPetsByStatus?status=%s",
 					status));
 			try {
-				ApiUtil.setResponse(request, "application/json",
-						new ObjectMapper().writeValueAsString(petservice.findPetByStatuses(status)));
+				String petsJSON = new ObjectMapper().writeValueAsString(petservice.findPetByStatuses(status));
+				ApiUtil.setResponse(request, "application/json", petsJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (JsonProcessingException e) {
 				PetApiController.log.error("PetStorePetService with findPetsByStatus() " + e.getMessage());
@@ -131,23 +126,6 @@ public class PetApiController implements PetApi {
 
 		return new ResponseEntity<List<Pet>>(HttpStatus.NOT_IMPLEMENTED);
 	}
-
-    @PostConstruct
-	@Transactional
-    public void test() throws JsonProcessingException {
-//        List<String> status = new ArrayList<>();
-//        status.add(Pet.StatusEnum.AVAILABLE.getValue());
-//		String s = status.get(0);
-//		List<Pet> pets = this.getPreloadedPets().stream().filter(p -> p.getStatus().getValue().equals(s)).collect(Collectors.toList());
-//		List<com.chtrembl.petstore.pet.entity.Pet> petsEntities = petservice.findPetByStatus(status.get(0));
-//		petsEntities.forEach(p -> {
-//			System.out.println(p.getTags());
-//		});
-//		String petsJSON = new ObjectMapper().writeValueAsString(pets);
-//		String petsEntitiesJSON = new ObjectMapper().writeValueAsString(petsEntities);
-//		PetApiController.log.info("petsJSON = " + petsJSON);
-//		PetApiController.log.info("petsEntitiesJSON = " + petsEntitiesJSON);
-    }
 
 	@Override
 	public ResponseEntity<Void> addPet(
@@ -166,8 +144,7 @@ public class PetApiController implements PetApi {
 
 	@Override
 	public ResponseEntity<List<Pet>> findPetsByTags(
-			@NotNull @ApiParam(value = "Tags to filter by", required = true)
-			@Valid @RequestParam(value = "tags", required = true) List<String> tags) {
+			@NotNull @ApiParam(value = "Tags to filter by", required = true) @Valid @RequestParam(value = "tags", required = true) List<String> tags) {
 		String accept = request.getHeader("Accept");
 
 		if (accept != null && accept.contains("application/json")) {

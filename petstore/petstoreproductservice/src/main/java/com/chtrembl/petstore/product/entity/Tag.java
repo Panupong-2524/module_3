@@ -2,7 +2,6 @@ package com.chtrembl.petstore.product.entity;
 
 
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
