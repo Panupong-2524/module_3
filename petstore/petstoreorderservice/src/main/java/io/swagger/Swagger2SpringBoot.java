@@ -1,5 +1,6 @@
 package io.swagger;
 
+import com.azure.spring.data.cosmos.repository.config.EnableCosmosRepositories;
 import com.chtrembl.petstore.order.model.ContainerEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +8,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -15,10 +16,17 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.chtrembl.petstore.order", exclude = {DataSourceAutoConfiguration.class})
 @EnableCaching
 @EnableSwagger2
-@ComponentScan(basePackages = { "io.swagger", "com.chtrembl.petstore.order.api", "io.swagger.configuration" })
+@EnableCosmosRepositories(basePackages = "com.chtrembl.petstore.order.repository")
+@ComponentScan(basePackages = { "io.swagger"
+		, "com.chtrembl.petstore.order.api"
+		, "com.chtrembl.petstore.order.entity"
+		, "com.chtrembl.petstore.order.repository"
+		, "com.chtrembl.petstore.order.config"
+		, "com.chtrembl.petstore.order.service"
+		,"io.swagger.configuration" })
 public class Swagger2SpringBoot implements CommandLineRunner {
 	static final Logger log = LoggerFactory.getLogger(Swagger2SpringBoot.class);
 

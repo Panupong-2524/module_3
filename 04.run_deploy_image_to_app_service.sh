@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -lt 2 ]; then
-    echo "Usage: $0 <resource group> <acr name>"
+    echo "Usage: $0 <resource group> <acr name> <region>"
     exit 1
 fi
 
@@ -10,7 +10,8 @@ fi
 # acrName="petshopboyzcr"
 
 RG_NAME=$1
-ACR_NAME=$2
+REGION=$2
+ACR_NAME=$3
 
 # Function to create a web app and deploy a container from ACR
 deploy_app() {
@@ -42,12 +43,11 @@ deploy_app() {
 }
 
 # Deploy to Web Plans
-deploy_app "petshopboyz-web-app-eastus" "asp-web-eastus" "petstoreapp" "eastus"
-deploy_app "petshopboyz-web-app-westeurope" "asp-web-westeurope" "petstoreapp" "westeurope"
+deploy_app "petshopboyz-web-app-$REGION" "asp-web-$REGION" "petstoreapp" "$REGION"
 
 # # Deploy to API Plan
-deploy_app "petshopboyz-pet-service-eastus" "asp-api-eastus" "petstorepetservice" "eastus"
-deploy_app "petshopboyz-order-service-eastus" "asp-api-eastus" "petstoreorderservice" "eastus"
-deploy_app "petshopboyz-product-service-eastus" "asp-api-eastus" "petstoreproductservice" "eastus"
+deploy_app "petshopboyz-pet-service-$REGION" "asp-api-$REGION" "petstorepetservice" "$REGION"
+deploy_app "petshopboyz-order-service-$REGION" "asp-api-$REGION" "petstoreorderservice" "$REGION"
+deploy_app "petshopboyz-product-service-$REGION" "asp-api-$REGION" "petstoreproductservice" "$REGION"
 
 echo "Deployment to APP service successfully"

@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/cloudx-java-azure-dev.iml" filepath="$PROJECT_DIR$/.idea/cloudx-java-azure-dev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/petstore/petstoreorderservice/petstoreorderservice.iml" filepath="$PROJECT_DIR$/petstore/petstoreorderservice/petstoreorderservice.iml" />
     </modules>
   </component>
 </project>
