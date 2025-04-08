@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.chtrembl.petstore.pet.service.PetService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -44,6 +44,9 @@ public class PetApiController implements PetApi {
 	private final ObjectMapper objectMapper;
 
 	private final NativeWebRequest request;
+
+    @Autowired
+    private PetService petservice;
 
 	@Autowired
 	private ContainerEnvironment containerEnvironment;
@@ -111,7 +114,7 @@ public class PetApiController implements PetApi {
 					"PetStorePetService incoming GET request to petstorepetservice/v2/pet/findPetsByStatus?status=%s",
 					status));
 			try {
-				String petsJSON = new ObjectMapper().writeValueAsString(this.getPreloadedPets());
+				String petsJSON = new ObjectMapper().writeValueAsString(petservice.findPetByStatuses(status));
 				ApiUtil.setResponse(request, "application/json", petsJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (JsonProcessingException e) {
@@ -143,6 +146,7 @@ public class PetApiController implements PetApi {
 	public ResponseEntity<List<Pet>> findPetsByTags(
 			@NotNull @ApiParam(value = "Tags to filter by", required = true) @Valid @RequestParam(value = "tags", required = true) List<String> tags) {
 		String accept = request.getHeader("Accept");
+
 		if (accept != null && accept.contains("application/json")) {
 			try {
 				return new ResponseEntity<List<Pet>>(objectMapper.readValue(

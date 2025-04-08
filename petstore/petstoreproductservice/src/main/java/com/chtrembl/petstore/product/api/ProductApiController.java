@@ -8,6 +8,7 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.chtrembl.petstore.product.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -45,6 +46,9 @@ public class ProductApiController implements ProductApi {
 	private final ObjectMapper objectMapper;
 
 	private final NativeWebRequest request;
+
+	@Autowired
+	private ProductService productService;
 
 	@Autowired
 	private ContainerEnvironment containerEnvironment;
@@ -101,7 +105,7 @@ public class ProductApiController implements ProductApi {
 					"PetStoreProductService incoming GET request to petstoreproductservice/v2/pet/findProductsByStatus?status=%s",
 					status));
 			try {
-				String petsJSON = new ObjectMapper().writeValueAsString(this.getPreloadedProducts());
+				String petsJSON = new ObjectMapper().writeValueAsString(productService.getProductByStatuses(status));
 				ApiUtil.setResponse(request, "application/json", petsJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (JsonProcessingException e) {
