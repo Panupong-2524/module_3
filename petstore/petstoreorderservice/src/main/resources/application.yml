@@ -29,3 +29,7 @@ management:
   endpoint:
     httptrace:
       enabled: true
+
+servicebus:
+  connection-string: ${SERVICE_BUS_CONNECTION_STRING}
+  queue-name: ${QUEUE_NAME}
