@@ -3,6 +3,7 @@ package com.chtrembl.petstore.order.api;
 import com.chtrembl.petstore.order.model.ContainerEnvironment;
 import com.chtrembl.petstore.order.model.Order;
 import com.chtrembl.petstore.order.model.Product;
+import com.chtrembl.petstore.order.service.ServiceBusMessagePublisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -28,9 +29,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
-import static com.chtrembl.petstore.order.util.AzureFunctionCaller.callAzureFunctionWithRetry;
-
-
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2021-12-21T10:17:19.885-05:00")
 
 @Controller
@@ -52,6 +50,9 @@ public class StoreApiController implements StoreApi {
 
 	@Autowired
 	private StoreApiCache storeApiCache;
+
+	@Autowired
+	private ServiceBusMessagePublisher serviceBusMessagePublisher;
 
 	@Override
 	public StoreApiCache getBeanToBeAutowired() {
@@ -167,8 +168,8 @@ public class StoreApiController implements StoreApi {
 			try {
 				Order order = this.storeApiCache.getOrder(body.getId());
 				String orderJSON = new ObjectMapper().writeValueAsString(order);
-				// Upload latest order here
-				callAzureFunctionWithRetry(body.getId(), orderJSON);
+				// Send message to service bus
+				serviceBusMessagePublisher.sendMessage(orderJSON);
 				ApiUtil.setResponse(request, "application/json", orderJSON);
 				return new ResponseEntity<>(HttpStatus.OK);
 			} catch (IOException e) {
