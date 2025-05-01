@@ -21,6 +21,14 @@ petstore:
       fixedRate: ${SIGNALR_UPDATE_FIXEDRATE:60000}
 server:
   port: ${PETSTOREAPP_SERVER_PORT:8080}
+  forward-headers-strategy: native
+
+logging:
+  level:
+    root: debug
+    com.azure.spring.cloud: debug
+    org.springframework.security: debug
+
 management:
   endpoints:
     web:
@@ -33,9 +41,70 @@ management:
     httptrace:
       enabled: true
 spring:
+  cloud:
+    azure:
+      active-directory:
+        b2c:
+          tenant: module10epamtenant # Example: 'contoso.onmicrosoft.com'
+          base-uri: https://module10epamtenant.b2clogin.com/ # Example: 'https://contoso.b2clogin.com/'
+          credential:
+            client-id: e5b49661-1e3e-4205-8268-2c4c79e23039
+            client-secret: avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77
+          logout-success-url: http://localhost:8080
+          scope: openid
+          login-flow: sign-up-or-sign-in
+          reply-url: http://localhost:8080
+          user-flows:
+            sign-up-or-sign-in: B2C_1_signup_and_signin_v2
+
   application:
     name: petstoreapp
   thymeleaf:
     cache: false
   cache:
     cache-names: currentUsers
+
+
+#  cloud:
+#    azure:
+#      active-directory:
+#        enabled: true
+#        profile:
+#          tenant-id: 545d49da-daa8-4a07-be75-55700a603282
+#        credential:
+#          client-id: e5b49661-1e3e-4205-8268-2c4c79e23039
+#          client-secret: avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77
+#
+#  security:
+#    oauth2:
+#      client:
+#        registration:
+#          petstore-app:
+#            tenant-id: 545d49da-daa8-4a07-be75-55700a603282
+#            client-id: e5b49661-1e3e-4205-8268-2c4c79e23039
+#            client-secret: avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77
+#            # client-authentication-method: none
+#            client-name: PetStore App
+#            authorization-grant-type: authorization_code
+#            scope: openid
+#            redirect-uri: http://localhost:8080
+#            provider: azure-b2c
+#        provider:
+#          azure-b2c:
+#          # issuer-uri: https://module10epamtenant.b2clogin.com/module10epamtenant.onmicrosoft.com/b2c_1_signup_and_signin_v2/v2.0/
+#            # issuer-uri: https://module10epamtenant.b2clogin.com/module10epamtenant.onmicrosoft.com/B2C_1_signup_and_signin_v2/v2.0/
+#            authorization-uri: https://module10epamtenant.b2clogin.com/module10epamtenant.onmicrosoft.com/b2c_1_signup_and_signin_v2/oauth2/v2.0/authorize?&code_challenge=2ZSi2IWQ35D_SCpWtO5yyyCaLUVb3NJjAhezhsRH96s&code_challenge_method=S256
+#            token-uri: https://module10epamtenant.b2clogin.com/module10epamtenant.onmicrosoft.com/b2c_1_signup_and_signin_v2/oauth2/v2.0/token
+#            jwk-set-uri: https://module10epamtenant.b2clogin.com/module10epamtenant.onmicrosoft.com/b2c_1_signup_and_signin_v2/discovery/v2.0/keys
+
+#  cloud:
+#    azure:
+#      active-directory:
+#        b2c:
+#          login-flow: true
+#          tenant: module10epamtenant.onmicrosoft.com # Your tenant domain
+#          client-id: e5b49661-1e3e-4205-8268-2c4c79e23039
+#          client-secret: avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77
+#          user-flows:
+#            sign-up-sign-in: b2c_1_signup_and_signin_v2
+#          reply-url: https://petshopboyz-module-9-web-app-southeastasia.azurewebsites.net/
