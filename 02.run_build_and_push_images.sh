@@ -66,24 +66,24 @@ run_command() {
 cd "$BASE_DIR"
 
 # Build Docker Images
-run_command_docker_build $PET_STORE_PRODUCT_SERVICE
-run_command_docker_build $PET_STORE_ORDER_SERVICE
-run_command_docker_build $PET_STORE_PET_SERVICE
+#run_command_docker_build $PET_STORE_PRODUCT_SERVICE
+#run_command_docker_build $PET_STORE_ORDER_SERVICE
+#run_command_docker_build $PET_STORE_PET_SERVICE
 run_command_docker_build $PET_STORE_APP
 
 # Login to Azure Container Registry
 az acr login --name $ACR_NAME
 
 # Tag Docker Images Locally
-run_command_tag_image_locally $ACR_NAME $PET_STORE_PRODUCT_SERVICE
-run_command_tag_image_locally $ACR_NAME $PET_STORE_ORDER_SERVICE
-run_command_tag_image_locally $ACR_NAME $PET_STORE_PET_SERVICE
+#run_command_tag_image_locally $ACR_NAME $PET_STORE_PRODUCT_SERVICE
+#run_command_tag_image_locally $ACR_NAME $PET_STORE_ORDER_SERVICE
+#run_command_tag_image_locally $ACR_NAME $PET_STORE_PET_SERVICE
 run_command_tag_image_locally $ACR_NAME $PET_STORE_APP
 
 # Push Docker Images to Azure Container Registry
-run_command_push_image_to_acr $ACR_NAME $PET_STORE_PRODUCT_SERVICE
-run_command_push_image_to_acr $ACR_NAME $PET_STORE_ORDER_SERVICE
-run_command_push_image_to_acr $ACR_NAME $PET_STORE_PET_SERVICE
+#run_command_push_image_to_acr $ACR_NAME $PET_STORE_PRODUCT_SERVICE
+#run_command_push_image_to_acr $ACR_NAME $PET_STORE_ORDER_SERVICE
+#run_command_push_image_to_acr $ACR_NAME $PET_STORE_PET_SERVICE
 run_command_push_image_to_acr $ACR_NAME $PET_STORE_APP
 
 echo "Build, Tag Locally, and Push to ACR successfully"

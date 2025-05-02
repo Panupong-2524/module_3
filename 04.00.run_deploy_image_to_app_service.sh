@@ -42,8 +42,8 @@ deploy_app() {
 deploy_app "petshopboyz-module-9-web-app-$REGION" "asp-web-$REGION" "petstoreapp" "$REGION"
 
 # Deploy to API Plan
-deploy_app "petshopboyz-module-9-pet-service-$REGION" "asp-api-$REGION" "petstorepetservice" "$REGION"
-deploy_app "petshopboyz-module-9-order-service-$REGION" "asp-api-$REGION" "petstoreorderservice" "$REGION"
-deploy_app "petshopboyz-module-9-product-service-$REGION" "asp-api-$REGION" "petstoreproductservice" "$REGION"
+#deploy_app "petshopboyz-module-9-pet-service-$REGION" "asp-api-$REGION" "petstorepetservice" "$REGION"
+#deploy_app "petshopboyz-module-9-order-service-$REGION" "asp-api-$REGION" "petstoreorderservice" "$REGION"
+#deploy_app "petshopboyz-module-9-product-service-$REGION" "asp-api-$REGION" "petstoreproductservice" "$REGION"
 
 echo "Deployment to APP service successfully"
