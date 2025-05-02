@@ -103,6 +103,9 @@ public class WebAppController {
 			}
 			model.addAttribute("claims", user.getAttributes());
 			model.addAttribute("user", this.sessionUser.getName());
+			model.addAttribute("userName", token.getPrincipal().getAttributes().get("email"));
+			model.addAttribute("displayName", token.getPrincipal().getAttributes().get("name"));
+
 			model.addAttribute("grant_type", user.getAuthorities());
 		}
 
