@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sh ./04.01.run_add_env_parameter.sh module-10-rg southeastasia petshopboyz-module-9-web-app-southeastasia TENANT_ID=module10epamtenant BASE_URI=https://module10epamtenant.b2clogin.com/ HOME_URL=https://petshopboyz-module-9-pet-service-southeastasia.azurewebsites.net CLIENT_ID=e5b49661-1e3e-4205-8268-2c4c79e23039 CLIENT_SECRET=avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77 HOME_URL=https://petshopboyz-module-9-web-app-southeastasia.azurewebsites.net/login/oauth2/code/petstore-app USER_FLOW=B2C_1_signup_and_signin_v2 LOGOUT_SUCCESS_URL=https://petshopboyz-module-9-web-app-southeastasia.azurewebsites.net
+sh ./04.01.run_add_env_parameter.sh module-10-rg southeastasia petshopboyz-module-9-web-app-southeastasia TENANT_ID=module10epamtenant BASE_URI=https://module10epamtenant.b2clogin.com/ HOME_URL=https://petshopboyz-module-9-pet-service-southeastasia.azurewebsites.net CLIENT_ID=e5b49661-1e3e-4205-8268-2c4c79e23039 CLIENT_SECRET=avy8Q~~r~qQZr7Y012NyDF2p3eOYWc-on5DtXa77 LOGIN_URL=https://petshopboyz-module-9-web-app-southeastasia.azurewebsites.net/login/oauth2/code/petstore-app USER_FLOW=B2C_1_signup_and_signin_v2 LOGOUT_SUCCESS_URL=https://petshopboyz-module-9-web-app-southeastasia.azurewebsites.net
 
 # bash ./01.run_create_resource_and_acr.sh module-8-rg southeastasia petshopboyzcr
 #

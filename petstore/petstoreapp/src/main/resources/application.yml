@@ -70,6 +70,6 @@ spring:
           logout-success-url: ${LOGOUT_SUCCESS_URL:http://localhost:8080}
           scope: openid
           login-flow: sign-up-or-sign-in
-          reply-url: ${HOME_URL:http://localhost:8080}
+          reply-url: ${LOGIN_URL:http://localhost:8080}
           user-flows:
             sign-up-or-sign-in: ${USER_FLOW:B2C_1_signup_and_signin_v2}
