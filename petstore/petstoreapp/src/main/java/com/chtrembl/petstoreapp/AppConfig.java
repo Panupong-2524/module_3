@@ -435,15 +435,4 @@ public class AppConfig implements WebMvcConfigurer {
 		}
 	}
 
-	public class TokenUtils {
-
-		public static JWTClaimsSet parseIdToken(String idToken) {
-			try {
-				return JWTParser.parse(idToken).getJWTClaimsSet();
-			} catch (Exception e) {
-				throw new IllegalArgumentException("Failed to parse JWT: " + e.getMessage(), e);
-			}
-		}
-	}
-
 }
