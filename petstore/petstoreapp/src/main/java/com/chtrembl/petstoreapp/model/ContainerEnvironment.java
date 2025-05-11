@@ -87,6 +87,9 @@ public class ContainerEnvironment implements Serializable {
 	@Value("${petstore.signalr.key:}")
 	private String signalRKey;
 
+	@Value("${azure.application-insights.instrumentation-key:}")
+	private String instrumentationKey;
+
 	private WebClient signalRWebClient = null;
 
 	public static String CURRENT_USERS_HUB = "currentUsers";

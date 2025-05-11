@@ -5,6 +5,8 @@
     <envs>
       <env name="PETSTOREORDERSERVICE_SERVER_PORT" value="8080" />
       <env name="PETSTOREPRODUCTSERVICE_URL" value="http://localhost:8082" />
+      <env name="SERVICE_BUS_CONNECTION_STRING" value="Endpoint=sb://module-final-petshopboyz.servicebus.windows.net/;SharedAccessKeyName=order-titem-queue-shared-policy;SharedAccessKey=+962fgk+7bNO0lOTortumOm4V3tjJM3Rg+ASbExfPX0=" />
+      <env name="QUEUE_NAME" value="message" />
     </envs>
     <module name="petstoreorderservice" />
     <option name="MAIN_CLASS_NAME" value="io.swagger.Swagger2SpringBoot" />
