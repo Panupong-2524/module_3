@@ -18,7 +18,7 @@ import java.util.Map;
 public class OrderItemFunction {
 
     private static final String CONNECTION_STRING = System.getenv("AZURE_STORAGE_CONNECTION_STRING");
-    private static final String CONTAINER_NAME = "message";
+    private static final String CONTAINER_NAME = System.getenv("CONTAINER_NAME");
     private static final boolean IS_OVER_WRITE = true;
 
     @FunctionName("ServiceBusQueueTrigger")
